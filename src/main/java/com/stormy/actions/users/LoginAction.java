@@ -1,29 +1,47 @@
 package com.stormy.actions.users;
 
-public class LoginAction {
+import javax.servlet.ServletContext;
 
-	private String username;
-	private String password;
-	
-	public String getUsername() {
-		return username;
-	}
-	public void setUsername(String username) {
-		this.username = username;
-	}
-	public String getPassword() {
-		return password;
-	}
-	public void setPassword(String password) {
-		this.password = password;
-	}
+import org.apache.struts2.util.ServletContextAware;
+import org.hibernate.SessionFactory;
+
+import com.opensymphony.xwork2.Action;
+import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.ModelDriven;
+import com.stormy.dao.UserDAO;
+import com.stormy.dao.UserDAOImpl;
+import com.stormy.model.User;
+
+public class LoginAction implements Action, ModelDriven<User>,ServletContextAware{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5165769090025541738L;
+	private User user = new User();
+	private ServletContext ctx;
 	
 	public String execute() throws Exception{
 		
-		if(getUsername().equalsIgnoreCase("shridatt") && getPassword().equalsIgnoreCase("shri"))
-			return "success";
-		else 
-			return "error";
+		SessionFactory sessionFactory = (SessionFactory) ctx.getAttribute("SessionFactory");
+		UserDAO userDAO = new UserDAOImpl(sessionFactory);
+		User userDb = userDAO.getUserByCredentials(user.getUsername(),user.getPassword());
+		if(userDb==null)
+			return ERROR;
+		else{
+			user.setEmail(userDb.getEmail());
+			user.setId(userDb.getId());
+			return SUCCESS;
+		}
+	}
+	
+	@Override
+	public void setServletContext(ServletContext sctx) {
+		this.ctx = sctx;
+	}
+	@Override
+	public User getModel() {
+		return user;
 	}
 	
 	

@@ -10,7 +10,7 @@
     <package name="stormy" extends="struts-default">
  
         <action name="index">
-            <result>/welcome.jsp</result>
+            <result>/index.jsp</result>
         </action>
         
         <action name="login" class="com.stormy.actions.users.LoginAction">
